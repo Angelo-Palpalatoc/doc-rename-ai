@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-blue: #0054a4;
+  --brand-red: #b51f32;
+  --brand-ink: #162b43;
+  --brand-muted: #536477;
+  --brand-bg: #f3f6fa;
+  --brand-success: #14643c;
+  --brand-warning: #805300;
+}
+
+body {
+  background-color: #f3f6fa;
+  color: #162b43;
+}
+
+@keyframes indeterminate-slide {
+  0% {
+    transform: translateX(-100%) scaleX(0.35);
+  }
+  50% {
+    transform: translateX(40%) scaleX(0.65);
+  }
+  100% {
+    transform: translateX(220%) scaleX(0.35);
+  }
+}
+
+.progress-indeterminate {
+  width: 45%;
+  transform-origin: left center;
+  animation: indeterminate-slide 1.35s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "cert_exact_01",
+    "category": "certificate_of_incorporation",
+    "companies": ["Northstar Logistics Corp.", "Harborline Foods, Inc."],
+    "text": "CERTIFICATE OF INCORPORATION\nThis is to certify that\nNORTHSTAR LOGISTICS CORP.\nhas been duly incorporated under existing laws.",
+    "expected_name": "Northstar Logistics Corp.",
+    "expected_ambiguous": false
+  },
+  {
+    "id": "cert_ocr_typo_02",
+    "category": "ocr_noisy_fuzzy",
+    "companies": ["Northstar Logistics Corp."],
+    "text": "CERTIFICATE OF INCORPORATION\nThis is to certify that\nNORTHSTAK LOGISTICS CORPORATION\nhas been duly incorporated.",
+    "expected_name": "Northstar Logistics Corp.",
+    "expected_ambiguous": false
+  },
+  {
+    "id": "sec_cert_03",
+    "category": "secretary_certificate",
+    "companies": ["Harborline Foods, Inc."],
+    "text": "SECRETARY'S CERTIFICATE\nI, Maria Santos, Corporate Secretary of HARBORLINE FOODS INC (the 'Corporation'),\ndo hereby certify that the Board resolved to designate APEX BANK CORP. as depository.",
+    "expected_name": "Harborline Foods, Inc.",
+    "expected_ambiguous": false
+  },
+  {
+    "id": "gis_04",
+    "category": "general_information_sheet",
+    "companies": [],
+    "text": "GENERAL INFORMATION SHEET\n1. CORPORATE NAME: PACIFIC RIDGE SOLAR HOLDINGS, CORP.\n2. PRINCIPAL OFFICE: Metro City",
+    "expected_name": "PACIFIC RIDGE SOLAR HOLDINGS, CORP.",
+    "expected_ambiguous": false
+  },
+  {
+    "id": "articles_05",
+    "category": "articles_of_incorporation",
+    "companies": [],
+    "text": "ARTICLES OF INCORPORATION\nFIRST: That the name of the corporation shall be:\nVERDANT AGRI VENTURES INCORPORATED\nSECOND: Purpose...",
+    "expected_name": "VERDANT AGRI VENTURES INCORPORATED",
+    "expected_ambiguous": false
+  },
+  {
+    "id": "ambiguous_06",
+    "category": "ambiguous_multi_holder",
+    "companies": [],
+    "text": "This is to certify that ALPHA TRADING CORP. has been registered.\nThis is to certify that BETA TRADING CORP. has been registered.",
+    "expected_name": null,
+    "expected_ambiguous": true
+  },
+  {
+    "id": "cross_page_guard_07",
+    "category": "page_boundary_guard",
+    "companies": [],
+    "text": "CERTIFICATE OF INCORPORATION\n\fKNOW ALL PERSONS BY THESE PRESENTS:\nORION BUILDERS CORP.",
+    "expected_name": null,
+    "expected_ambiguous": false
+  }
+]
