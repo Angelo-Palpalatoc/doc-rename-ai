@@ -1,56 +1,38 @@
-# Deploying DocRename AI (Free HTTPS Portfolio Stack)
+# Deploying DocRename AI (100% Free HTTPS Stack)
 
-## Recommended Architecture
+- **Backend (FastAPI + RapidOCR):** **Render** (Free Web Service via Docker, auto-deploys from GitHub)
 - **Frontend (Next.js):** **Vercel** (Free Hobby tier, automatic HTTPS)
-- **Backend (FastAPI + RapidOCR):** **Hugging Face Spaces (Docker)** — Free tier gives **2 vCPU / 16 GB RAM**, which runs `PyMuPDF` + `RapidOCR (ONNX)` comfortably without OOM errors. *(Alternative: Railway or Render Starter.)*
 
 ---
 
-## Step 1: Push to GitHub
+## Step 1: Deploy Backend to Render (Free)
 
-```powershell
-Set-Location "c:\Users\Pisonet\Desktop\Projects\doc-rename-ai"
-git init
-git add .
-git commit -m "Initial commit: DocRename AI (Next.js + FastAPI hybrid OCR)"
-git branch -M main
-git remote add origin https://github.com/<your-username>/doc-rename-ai.git
-git push -u origin main
-```
+1. Go to https://dashboard.render.com and sign in with GitHub.
+2. Click **New + → Web Service** (or **New + → Blueprint** to auto-import `render.yaml`).
+3. Select your `doc-rename-ai` GitHub repository and configure:
+   - **Name:** `doc-rename-ai-api`
+   - **Root Directory:** `backend`
+   - **Language / Runtime:** `Docker`
+   - **Instance Type:** `Free`
+   - **Health Check Path:** `/api/health`
+4. *(Optional)* Add environment variables under **Environment** to enable live LLM fallback:
+   - `LLM_PROVIDER` = `gemini` (or `openai`)
+   - `GEMINI_API_KEY` = `<your-key>`
+5. Click **Create Web Service**.
+6. Once the build finishes and status is **Live**, verify:
+   `https://<your-render-service>.onrender.com/api/health`
 
----
-
-## Step 2: Deploy Backend to Hugging Face Spaces (Free 16GB RAM)
-
-1. Go to https://huggingface.co/new-space
-2. Choose:
-   - **Space name:** `doc-rename-ai-api`
-   - **SDK:** **Docker** → **Blank**
-   - **Hardware:** Free CPU basic (2 vCPU, 16 GB RAM)
-   - **Visibility:** Public
-3. Push the `backend/` folder to your Space repo (or upload `Dockerfile`, `pyproject.toml`, `uv.lock`, `app/`, and `eval/`):
-   ```powershell
-   git clone https://huggingface.co/spaces/<hf-username>/doc-rename-ai-api ../hf-space
-   Copy-Item -Recurse -Force backend\Dockerfile, backend\pyproject.toml, backend\uv.lock, backend\app, backend\eval ..\hf-space\
-   Set-Location ..\hf-space
-   git add .
-   git commit -m "Deploy DocRename AI FastAPI backend"
-   git push
-   ```
-4. *(Optional)* In Space **Settings → Variables and secrets**, add:
-   - `LLM_PROVIDER=gemini` (or `openai`)
-   - `GEMINI_API_KEY=...` (as a **Secret**)
-5. Verify your backend is live at:
-   `https://<hf-username>-doc-rename-ai-api.hf.space/api/health`
+*(Note: Render's Free tier sleeps after 15 minutes of inactivity; the first request after sleep takes ~30–50 seconds to wake up.)*
 
 ---
 
-## Step 3: Deploy Frontend to Vercel (Free HTTPS)
+## Step 2: Deploy Frontend to Vercel (Free HTTPS)
 
 1. Go to https://vercel.com/new and import your `doc-rename-ai` GitHub repository.
 2. Set **Root Directory** to `frontend`.
 3. Add **Environment Variable**:
-   - `BACKEND_URL` = `https://<hf-username>-doc-rename-ai-api.hf.space`
+   - **Name:** `BACKEND_URL`
+   - **Value:** `https://<your-render-service>.onrender.com` *(no trailing slash)*
 4. Click **Deploy**.
 
-Next.js automatically proxies `/api/*` to `BACKEND_URL`, so your mobile phone gets a clean HTTPS URL (`https://doc-rename-ai.vercel.app`) with camera scanning (`capture="environment"`) and zero CORS issues.
+Next.js proxies `/api/*` directly to `BACKEND_URL`, so your mobile phone gets a clean HTTPS URL (`https://<your-app>.vercel.app`) with camera scanning (`capture="environment"`) and zero CORS issues.

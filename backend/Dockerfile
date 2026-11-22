@@ -2,7 +2,9 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    UV_LINK_MODE=copy
+    UV_LINK_MODE=copy \
+    OMP_NUM_THREADS=1 \
+    PATH="/app/.venv/bin:$PATH"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 \
@@ -21,10 +23,11 @@ COPY app ./app
 COPY eval ./eval
 
 # Pre-warm RapidOCR English ONNX models during image build to avoid cold-start downloads
-RUN uv run python -c "from app.ocr import _get_rapidocr; _get_rapidocr()"
+RUN /app/.venv/bin/python -c "from app.ocr import _get_rapidocr; _get_rapidocr()"
 
-# Support Hugging Face Spaces (7860), Render/Railway ($PORT), and local Docker (8000)
-ENV PORT=7860
-EXPOSE 7860
+RUN chmod -R a+rX /app
 
-CMD ["sh", "-c", "uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
+ENV PORT=8000
+EXPOSE 8000
+
+CMD ["sh", "-c", "/app/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
