@@ -12,8 +12,8 @@ from PIL import Image, ImageOps
 _ocr_engine = None
 _ocr_lock = threading.Lock()
 MAX_PDF_PAGES = 30
-MAX_IMAGE_LONG_EDGE = 1600
-PDF_RENDER_LONG_EDGE = 1400
+MAX_IMAGE_LONG_EDGE = 1400
+PDF_RENDER_LONG_EDGE = 1200
 
 
 @dataclass(frozen=True)
@@ -28,14 +28,18 @@ def _get_rapidocr():
     if _ocr_engine is None:
         with _ocr_lock:
             if _ocr_engine is None:
-                from rapidocr import LangRec, ModelType, OCRVersion, RapidOCR
+                from rapidocr import LangDet, LangRec, ModelType, OCRVersion, RapidOCR
 
                 _ocr_engine = RapidOCR(
                     params={
+                        "Global.use_cls": False,
+                        "Det.lang_type": LangDet.CH,
+                        "Det.ocr_version": OCRVersion.PPOCRV4,
+                        "Det.model_type": ModelType.MOBILE,
+                        "Det.limit_side_len": 736,
                         "Rec.lang_type": LangRec.EN,
                         "Rec.ocr_version": OCRVersion.PPOCRV4,
                         "Rec.model_type": ModelType.MOBILE,
-                        "Det.limit_side_len": 960,
                     }
                 )
     return _ocr_engine

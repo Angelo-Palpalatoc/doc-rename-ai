@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 import io
 import json
 import zipfile
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated
 
@@ -11,15 +13,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
 from app.config import settings
+from app.ocr import _get_rapidocr
 from app.pipeline import SUPPORTED_EXTENSIONS, analyze_document_bytes
 from app.rules import allocate_filename
 from app.schemas import AnalyzeDocumentResponse, CompanyListResponse, HealthResponse
 from app.xlsx_parser import parse_company_list
 
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    # Pre-warm ONNX Runtime sessions on startup so the first user request has no cold-init penalty.
+    await asyncio.to_thread(_get_rapidocr)
+    yield
+
+
 app = FastAPI(
     title="DocRename AI API",
     version="0.1.0",
     description="Hybrid local OCR + deterministic rules + structured-output LLM fallback API.",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
