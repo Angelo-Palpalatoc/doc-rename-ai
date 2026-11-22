@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gc
 import io
 import threading
 from dataclasses import dataclass
@@ -11,8 +12,8 @@ from PIL import Image, ImageOps
 _ocr_engine = None
 _ocr_lock = threading.Lock()
 MAX_PDF_PAGES = 30
-MAX_IMAGE_LONG_EDGE = 2400
-PDF_RENDER_LONG_EDGE = 2000
+MAX_IMAGE_LONG_EDGE = 1600
+PDF_RENDER_LONG_EDGE = 1400
 
 
 @dataclass(frozen=True)
@@ -34,7 +35,7 @@ def _get_rapidocr():
                         "Rec.lang_type": LangRec.EN,
                         "Rec.ocr_version": OCRVersion.PPOCRV4,
                         "Rec.model_type": ModelType.MOBILE,
-                        "Det.limit_side_len": 1600,
+                        "Det.limit_side_len": 960,
                     }
                 )
     return _ocr_engine
@@ -83,9 +84,13 @@ def _extract_pdf(content: bytes) -> OCRResult:
                 used_text = True
             else:
                 long_edge = max(page.rect.width, page.rect.height, 1.0)
-                scale = min(max(PDF_RENDER_LONG_EDGE / long_edge, 1.5), 3.5)
+                scale = min(max(PDF_RENDER_LONG_EDGE / long_edge, 1.2), 2.5)
                 pix = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), alpha=False)
-                ocr_text = _run_rapidocr_on_bytes(pix.tobytes("png"))
+                png_bytes = pix.tobytes("png")
+                del pix
+                ocr_text = _run_rapidocr_on_bytes(png_bytes)
+                del png_bytes
+                gc.collect()
                 pages_text.append(ocr_text if ocr_text else embedded)
                 used_ocr = True
 
