@@ -1,5 +1,9 @@
 # DocRename AI
 
+
+
+**[Try Live Demo →](https://doc-rename-ai.vercel.app)**
+
 Hybrid **Next.js (TypeScript) + FastAPI (Python)** document OCR and intelligent auto-renaming workspace.
 
 Built as an AI Engineering portfolio project demonstrating a **deterministic-first, LLM-fallback extraction pipeline**:
